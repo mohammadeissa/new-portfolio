@@ -14,6 +14,7 @@ export default function Navbar() {
         <Link href="/project">Projects</Link>
         <Link href="/business">Business</Link>
         <Link href="/contact">Contact</Link>
+        <Link href="/analytics">Analytics</Link>
       </div>
       <button className="theme-toggle" onClick={toggleTheme}>
         {theme === "dark" ? "☀️ Light" : "🌙 Dark"}
