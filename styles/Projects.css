@@ -1,0 +1,98 @@
+/* ============================
+   PROJECTS PAGE STYLING
+   ============================ */
+
+.projects-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 80px 20px;
+  color: #fff;
+}
+
+.projects-title {
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin-bottom: 40px;
+  text-align: center;
+  color: #fff;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.project-card {
+  background: #111;
+  border: 1px solid #333;
+  padding: 24px;
+  border-radius: 16px;
+  transition: all 0.25s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-6px);
+  border-color: #0070f3;
+  box-shadow: 0 6px 20px rgba(0, 112, 243, 0.25);
+}
+
+.project-card h3 {
+  font-size: 1.6rem;
+  margin-bottom: 12px;
+  color: #fff;
+}
+
+.project-card p {
+  font-size: 1rem;
+  color: #ccc;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.project-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tech-pill {
+  padding: 6px 12px;
+  background: #222;
+  border-radius: 20px;
+  border: 1px solid #333;
+  color: #bbb;
+  font-size: 0.85rem;
+}
+
+.project-link {
+  margin-top: 16px;
+  display: inline-block;
+  color: #0070f3;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.project-link:hover {
+  text-decoration: underline;
+}
+
+/* ============================
+   RESPONSIVE DESIGN
+   ============================ */
+
+@media (max-width: 768px) {
+  .projects-title {
+    font-size: 2.2rem;
+  }
+
+  .project-card {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .projects-title {
+    font-size: 1.9rem;
+  }
+}

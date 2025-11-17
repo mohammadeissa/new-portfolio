@@ -1,0 +1,14 @@
+[
+  {
+    "name": "EPC Carbon Credit Baseline Algorithm",
+    "description": "A dynamic algorithm that processes EPC datasets to determine defensible CO2 reduction baselines using quantiles and maxima from local authorities.",
+    "tech": ["Python", "Pandas", "APIs"],
+    "impact": "Potential collaboration with JP Morgan; patent work underway."
+  },
+  {
+    "name": "Default Prediction ML Model",
+    "description": "Built a machine learning model analyzing borrower data to estimate probability of default.",
+    "tech": ["Python", "Scikit-Learn", "PowerBI"],
+    "impact": "Improved risk assessment accuracy and dashboard insights."
+  }
+]
