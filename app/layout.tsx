@@ -4,6 +4,7 @@ import "./globals.css";
 import ChatWidget from "@/component/ChatWidget";
 import { ThemeProvider } from "@/component/ThemeProvider";
 import Navbar from "./Navbar";
+import AnalyticsTracker from "@/component/AnalyticsTracker";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +33,7 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <Navbar />
+          <AnalyticsTracker />
           {children}
           <ChatWidget />
         </ThemeProvider>

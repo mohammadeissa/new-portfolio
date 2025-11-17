@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -25,65 +26,76 @@ ChartJS.register(
   BarElement
 );
 
-const metrics = [
-  { label: "Visitors", value: "12,430" },
-  { label: "Messages Sent", value: "3,245" },
-  { label: "Avg. Response Time", value: "1.8s" },
-  { label: "Unique Topics", value: "27" },
-];
-
-const messagesPerDay = {
-  labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-  datasets: [
-    {
-      label: "Messages",
-      data: [220, 310, 280, 330, 350, 270, 240],
-      borderColor: "#0070f3",
-      backgroundColor: "rgba(0, 112, 243, 0.12)",
-      tension: 0.35,
-      fill: true,
-    },
-  ],
-};
-
-const topicDistribution = {
-  labels: ["Projects", "Background", "Contact", "Business", "Other"],
-  datasets: [
-    {
-      data: [32, 24, 18, 14, 12],
-      backgroundColor: [
-        "#0070f3",
-        "#22c55e",
-        "#f59e0b",
-        "#a855f7",
-        "#94a3b8",
-      ],
-      hoverOffset: 6,
-    },
-  ],
-};
-
-const popularQuestions = [
-  { q: "What projects have you built with AI?", count: 182 },
-  { q: "Can I see your resume?", count: 146 },
-  { q: "How to contact you?", count: 121 },
-  { q: "What tech stack do you use?", count: 94 },
-];
-
-const responseTimes = {
-  labels: ["12am", "4am", "8am", "12pm", "4pm", "8pm"],
-  datasets: [
-    {
-      label: "Avg Response (s)",
-      data: [2.1, 1.9, 1.7, 1.5, 1.6, 1.8],
-      backgroundColor: "#22c55e",
-      borderColor: "#16a34a",
-      borderWidth: 2,
-    },
-  ],
-};
-
 export default function AnalyticsPage() {
+  const [data, setData] = useState({
+    visitors: 0,
+    messages: 0,
+    responseTimes: [],
+    questions: {},
+    topics: {},
+  });
+
+  useEffect(() => {
+    fetch("/api/analytics")
+      .then((res) => res.json())
+      .then((json) => setData(json))
+      .catch(() => {});
+  }, []);
+
+  const avgResponse =
+    data.responseTimes.length === 0
+      ? 0
+      : data.responseTimes.reduce((a, b) => a + b, 0) /
+        data.responseTimes.length;
+
+  const metrics = [
+    { label: "Visitors", value: data.visitors },
+    { label: "Messages Sent", value: data.messages },
+    { label: "Avg. Response Time", value: `${avgResponse.toFixed(1)} ms` },
+    { label: "Unique Topics", value: Object.keys(data.topics).length },
+  ];
+
+  const topicDistribution = useMemo(() => {
+    const labels = Object.keys(data.topics);
+    const values = Object.values(data.topics);
+    return {
+      labels: labels.length ? labels : ["No data"],
+      datasets: [
+        {
+          data: values.length ? values : [1],
+          backgroundColor: [
+            "#0070f3",
+            "#22c55e",
+            "#f59e0b",
+            "#a855f7",
+            "#94a3b8",
+          ],
+          hoverOffset: 6,
+        },
+      ],
+    };
+  }, [data.topics]);
+
+  const responseTimes = {
+    labels: ["Samples"],
+    datasets: [
+      {
+        label: "Avg Response (ms)",
+        data: [Number(avgResponse.toFixed(1))],
+        backgroundColor: "#22c55e",
+        borderColor: "#16a34a",
+        borderWidth: 2,
+      },
+    ],
+  };
+
+  const popularQuestions = useMemo(() => {
+    return Object.entries(data.questions)
+      .map(([q, count]) => ({ q, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+  }, [data.questions]);
+
   return (
     <main className="analytics-page">
       <div className="analytics-header">
@@ -106,11 +118,6 @@ export default function AnalyticsPage() {
 
       <section className="charts-grid">
         <div className="chart-card">
-          <div className="card-title">Messages by Day</div>
-          <Line data={messagesPerDay} options={{ maintainAspectRatio: true }} />
-        </div>
-
-        <div className="chart-card">
           <div className="card-title">Topic Distribution</div>
           <Doughnut data={topicDistribution} />
         </div>
@@ -122,6 +129,7 @@ export default function AnalyticsPage() {
             options={{
               plugins: { legend: { display: false } },
               maintainAspectRatio: true,
+              scales: { y: { beginAtZero: true } },
             }}
           />
         </div>
@@ -129,6 +137,11 @@ export default function AnalyticsPage() {
 
       <div className="common-questions">
         <div className="card-title">Most Common Questions</div>
+        {popularQuestions.length === 0 && (
+          <div className="question-item">
+            <div className="question-text">No activity yet.</div>
+          </div>
+        )}
         {popularQuestions.map((item) => (
           <div key={item.q} className="question-item">
             <div className="question-text">{item.q}</div>

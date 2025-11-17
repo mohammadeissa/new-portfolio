@@ -10,6 +10,7 @@ export default function ChatWindow() {
   const sendMessage = async () => {
     if (!input.trim()) return;
 
+    const startTime = typeof performance !== "undefined" ? performance.now() : null;
     const userMessage = { role: "user", content: input };
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
@@ -35,6 +36,22 @@ export default function ChatWindow() {
         ]);
       } else {
         setMessages([...updatedMessages, data.reply]);
+      }
+
+      // fire and forget analytics
+      fetch("/api/analytics", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "message", question: userMessage.content }),
+      }).catch(() => {});
+
+      if (startTime !== null) {
+        const responseTimeMs = performance.now() - startTime;
+        fetch("/api/analytics", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ type: "responseTime", responseTimeMs }),
+        }).catch(() => {});
       }
     } catch (err) {
       setMessages([
