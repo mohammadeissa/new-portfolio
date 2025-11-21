@@ -16,7 +16,11 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://example.com";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "Mohammad Eissa | Data Science Portfolio",
   description:
     "Projects, analytics, and background of Mohammad Eissa — data science student and competitive swimmer.",
@@ -29,6 +33,7 @@ export const metadata: Metadata = {
     title: "Mohammad Eissa | Data Science Portfolio",
     description:
       "Projects, analytics, and background of Mohammad Eissa — data science student and competitive swimmer.",
+    url: siteUrl,
     images: ["/icon-512.png"],
   },
   twitter: {
@@ -45,8 +50,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://example.com";
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
