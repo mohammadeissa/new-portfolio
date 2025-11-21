@@ -8,23 +8,41 @@ function Contact() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState("");
+  const [sending, setSending] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // prevents page reload
 
-    const response = await fetch("http://localhost:5001/api/contact", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, message })
-    });
+    setSending(true);
+    setStatus("");
 
-    const data = await response.json();
-    setStatus(data.message);
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, message }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Unable to send message");
+      }
+
+      setStatus(data.message || "Message sent!");
+      setName("");
+      setEmail("");
+      setMessage("");
+    } catch (err) {
+      setStatus(err.message || "Something went wrong. Please try again.");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
     <div className="page-container">
-      <h1>Contact Me</h1>
+      <h1 className="contact-title">Contact Me</h1>
 
       <form onSubmit={handleSubmit} style={{ maxWidth: "400px", margin: "auto", textAlign: "left" }}>
         <label>Name:</label>
@@ -53,10 +71,12 @@ function Contact() {
           required
         />
 
-        <button type="submit" style={{ padding: "8px 15px" }}>Send</button>
+        <button className="contact-button" type="submit" disabled={sending} style={{ padding: "10px 16px" }}>
+          {sending ? "Sending..." : "Send"}
+        </button>
       </form>
 
-      {status && <p style={{ marginTop: "20px" }}>{status}</p>}
+      {status && <p className="contact-status" style={{ marginTop: "20px" }}>{status}</p>}
     </div>
   );
 }

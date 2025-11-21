@@ -6,9 +6,40 @@ import path from "path";
 
 const dataPath = path.join(process.cwd(), "data", "analytics.json");
 
+function defaultData() {
+  return {
+    visitors: 0,
+    messages: 0,
+    responseTimes: [],
+    questions: {},
+    topics: {},
+  };
+}
+
 async function readData() {
   const raw = await fs.readFile(dataPath, "utf-8");
-  return JSON.parse(raw);
+  try {
+    const parsed = JSON.parse(raw);
+    return {
+      ...defaultData(),
+      ...parsed,
+      responseTimes: Array.isArray(parsed?.responseTimes)
+        ? parsed.responseTimes
+        : [],
+      questions:
+        parsed?.questions && typeof parsed.questions === "object"
+          ? parsed.questions
+          : {},
+      topics:
+        parsed?.topics && typeof parsed.topics === "object"
+          ? parsed.topics
+          : {},
+    };
+  } catch (err) {
+    // Reset to defaults if JSON is corrupted
+    await writeData(defaultData());
+    return defaultData();
+  }
 }
 
 async function writeData(data) {

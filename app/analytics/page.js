@@ -42,22 +42,30 @@ export default function AnalyticsPage() {
       .catch(() => {});
   }, []);
 
+  const safeResponseTimes = Array.isArray(data.responseTimes)
+    ? data.responseTimes
+    : [];
+  const safeTopics =
+    data.topics && typeof data.topics === "object" ? data.topics : {};
+  const safeQuestions =
+    data.questions && typeof data.questions === "object" ? data.questions : {};
+
   const avgResponse =
-    data.responseTimes.length === 0
+    safeResponseTimes.length === 0
       ? 0
-      : data.responseTimes.reduce((a, b) => a + b, 0) /
-        data.responseTimes.length;
+      : safeResponseTimes.reduce((a, b) => a + b, 0) /
+        safeResponseTimes.length;
 
   const metrics = [
     { label: "Visitors", value: data.visitors },
     { label: "Messages Sent", value: data.messages },
     { label: "Avg. Response Time", value: `${avgResponse.toFixed(1)} ms` },
-    { label: "Unique Topics", value: Object.keys(data.topics).length },
+    { label: "Unique Topics", value: Object.keys(safeTopics).length },
   ];
 
   const topicDistribution = useMemo(() => {
-    const labels = Object.keys(data.topics);
-    const values = Object.values(data.topics);
+    const labels = Object.keys(safeTopics);
+    const values = Object.values(safeTopics);
     return {
       labels: labels.length ? labels : ["No data"],
       datasets: [
@@ -90,11 +98,11 @@ export default function AnalyticsPage() {
   };
 
   const popularQuestions = useMemo(() => {
-    return Object.entries(data.questions)
+    return Object.entries(safeQuestions)
       .map(([q, count]) => ({ q, count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
-  }, [data.questions]);
+  }, [safeQuestions]);
 
   return (
     <main className="analytics-page">

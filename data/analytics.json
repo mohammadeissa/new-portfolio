@@ -1,7 +1,9 @@
 {
-  "visitors": 1,
+  "visitors": 3,
   "messages": 0,
-  "responseTimes": [],
+  "responseTimes": [
+    2249.3000000715256
+  ],
   "questions": {},
   "topics": {}
 }
