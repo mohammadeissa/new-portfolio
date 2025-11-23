@@ -16,11 +16,24 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://example.com";
+const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+const siteUrl = (() => {
+  const candidate = rawSiteUrl?.trim();
+  if (!candidate) return "https://mohammadeissa.com";
+  if (!/^https?:\/\//i.test(candidate)) return `https://${candidate}`;
+  return candidate;
+})();
+
+// Ensure metadataBase always receives a valid absolute URL
+let metadataBase: URL | undefined;
+try {
+  metadataBase = new URL(siteUrl);
+} catch {
+  metadataBase = new URL("https://mohammadeissa.com");
+}
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase,
   title: "Mohammad Eissa | Data Science Portfolio",
   description:
     "Projects, analytics, and background of Mohammad Eissa — data science student and competitive swimmer.",
